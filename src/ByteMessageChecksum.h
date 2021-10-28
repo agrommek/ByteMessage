@@ -1,3 +1,35 @@
+/**
+ * @file    ByteMessageChecksum.h
+ * @brief   Header file for the ByteMessageChecksum class
+ * @author  Andreas Grommek
+ * @version 1.0.0
+ * @date    2021-10-22
+ * 
+ * @section license_ByteMessageChecksum_h License
+ * 
+ * The MIT Licence (MIT)
+ * 
+ * Copyright (c) 2021 Andreas Grommek
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #ifndef ByteMessageByteMessageChecksum_h
 #define ByteMessageByteMessageChecksum_h
 
@@ -22,11 +54,19 @@
  * - make class final in order to not care about virtual functions and destructors
  */
 
+/**
+ * @class   ByteMessageChecksum
+ * @brief   Templated class for all checksum fields in ByteMessage objects.
+ * @details This class is meant to be used in a composition in a class
+ *          derived from ByteMessage, i.e. as a data member.
+ *          It facilitates calculation, of a checksum. The checksum
+ *          function must be specified in the constructor.
+ */
 template <class T>
 class ByteMessageChecksum final {
     public:
         // number of bytes for data type T
-        static constexpr size_t size = sizeof(T);
+        static constexpr size_t size = sizeof(T); ///< Size of the checksum value in bytes
 
         // constructor - there is constructor without arguments
         ByteMessageChecksum(uint8_t* baseptr, size_t position, T (*checksumFunctionPtr)(const uint8_t*, size_t));

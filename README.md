@@ -11,8 +11,8 @@ For example, consider a point in 3D space. Each of the three coordinates should 
     p.y.set(22.2);  // set y coordinate
     p.z.set(33.3);  // set z coordinate
 
-    uint8_t* data = p.get_ptr();    // get a read-only pointer to the underlying array of data
-    size_t message_size = p.size(); // get length of the underlying array
+    uint8_t* data = p.get_ptr();  // get a read-only pointer to the underlying array of data
+    size_t message_size = p.size; // get length of the underlying array
 
 Now you can use `data` and `message_size` to send it somewhere. 
 
@@ -47,26 +47,26 @@ Here, we declared two classes, a `Point2D` of type `2` and a `Point3D` of type `
 The general idea is that `ByteMessage` objects contain a protected array of `uint8_t` to store all message content. However, `ByteMessage`objects do not have methods to fill in data or extract data from this array. Data is added to and extracted from this array through use of data members which you add in your derived class. The relevant data members have to be given a pointer to this array and a position to write to.
 
 
-### The `ByteMessage` class
+### The ByteMessage class
 
 The following methods exist for this class:
 
-| Method | description |
+| method / member | description |
 |:-------|:------------|
+| `static constexpr uint8_t type` | public static constant data to determine the message type |
+| `static constexpr size_t size`  | public static constant data to determined the size of the underlying data array in bytes |
 | `ByteMessage(void)` | default constructor without parameters |
 | `ByteMessage(const ByteMessage &bm)`| copy constructor |
 | `virtual ~ByteMessage() = default` | default public virtual destructor |
 | `ByteMessage& operator= (const ByteMessage& bm)` | the assignment operator |
-| `static uint8_t type(void)` | return the message type |
-| `static size_t size(void)`  | return message size in bytes |
-| `const uint8_t* get_ptr(void) const` | return read-only pointer to data |
-| `virtual bool populate(const uint8_t * raw_message, size_t message_size)` | populate message from raw byte array |
+| `virutal const uint8_t* get_ptr(void) const final` | return read-only pointer to data |
+| `virtual bool populate(const uint8_t * raw_message, size_t message_size) final` | populate message from raw byte array |
 
-### Types of data members to be uses within a `ByteMessage`
+### Types of data members to be uses within a ByteMessage object
 
 There are three different types of data members which you can add to your classes derived from `ByteMessage`- they are described in the following sections.
 
-#### `ByteMessageField`
+#### ByteMessageField
 
 A `ByteMessageField` is the most basic data member to handle fixed-length primitive data types (signed and unsigned integers, floating point numbers, and booleans). `ByteMessageField` is a template class (i.e. `template <class T> ByteMessageField`, with `T` being the primitive type to store. However, some methods (`get()` and `set()`) are specialized methods and there is *no* generic implementation for them. This means you can only create `ByteMessageField` objects for data types supported by this library. There are `ByteMessageField`s for the following data types.
 
@@ -96,7 +96,7 @@ The following methods and data members exist for this class:
 | `T get(void) const` | method to retrieve value from field |
 | `ByteMessageField(const ByteMessageField &bmf) = delete` | explicitly delete the copy constructor |
 
-The constructor take two arguments: A pointer to a `uint8_t` array and a position within this array. This is the place where the value is written to by `set()`and retrieved from by `get()`. Example:
+The constructor takes two arguments: A pointer to a `uint8_t` array and a position within this array. This is the place where the value is written to by `set()`and retrieved from by `get()`. Example:
 
     // create an array of uint8_t with 10 elements
     uint8_t arr[10];
@@ -119,7 +119,7 @@ Note that different `ByteMessageField`s can (and most often will) share a common
 
 Data is written to the array in a defined format. The chosen format is big-endian byte order (i.e. network byte order), meaning the byte at the lowest memory address is the most significant byte.
 
-#### `ByteMessageChecksum`
+#### ByteMessageChecksum
 
 A `ByteMessageChecksum` represents a checksum value over all preceding bytes in the message. The class is a template class, i.e. `template <class T> ByteMessageChecksum`. The following public members and methods are available:
 
@@ -135,7 +135,7 @@ A `ByteMessageChecksum` represents a checksum value over all preceding bytes in 
 | `void update(void)` | calculate the checksum and store the value in message |
 | `bool check(void) const` | check if the stored checksum matches the calculated checksum |
 
-The constructor take *three* parameters. The first and the second parameter are a pointer to a `uint8_t` array and an an offset within this array, respectively. This is similar to the parameters of `ByteMessageField()`. The third parameter is a pointer to a function with return type `T`and taking itself two parameters, a `const uint8_t*` and a `size_t`. All checksum functions included with this library have this kind of function signature (see below).
+The constructor takes *three* parameters. The first and the second parameter are a pointer to a `uint8_t` array and an an offset within this array, respectively. This is similar to the parameters of `ByteMessageField()`. The third parameter is a pointer to a function with return type `T`and taking itself two parameters, a `const uint8_t*` and a `size_t`. All checksum functions included with this library have this kind of function signature (see below).
 
 Note that the checksum is calculated over the values in the `uint8_t`array starting from position 0 up to, but *not* including, the storage position of the checksum value. Values in the array *after* the checksum are not included in the calculation. Thus, it is best to position `ByteMessageChecksum` objects at the end of the array.
 
@@ -173,7 +173,7 @@ Example:
     ByteMessageChecksum<uint16_t> bmc3{arr, 4};  // note: same array, but used range does not overlap
     bmc3 = bmc;
 
-#### `ByteMessageFieldBlob`
+#### ByteMessageFieldBlob
 
 A `ByteMessageFieldBlob` serves the same function as a `ByteMessageField`, only that it is not defined for primitive data types, but rather for arbitrary binary data. The following public members and methods are available:
 
@@ -214,13 +214,13 @@ copy constructor, i.e.
 
 Note that we call the copy constructor of the parent class exlicitly in the initializier list. This is necessary to prevent warning messages when compiling with `g++`'s option `-Wextra`.
 
-If you choose not to define a copy constructor (or you forget to do so), copy construction of your derived class will NOT work. This is due to the fact that class members `ByteMessageField`, `ByteMessageChecksum` and `ByteMessageFieldBlob` have their copy constructors explicitly deleted. This makes the copy constructor of your derived class implicitly deleted as well when it contains at least one member of one of those types. By defining an empty copy constructor, we tell the compiler not to try to copy the members upon copy construction. The actual data is then copied by the copy constructor of `ByteMessage`, which copies the whole array.
+If you choose not to define a copy constructor (or you forget to do so), copy construction of your derived class will NOT work. This is due to the fact that class members `ByteMessageField`, `ByteMessageChecksum` and `ByteMessageFieldBlob` have their copy constructors explicitly deleted. This makes the copy constructor of your derived class implicitly deleted as well when it contains at least one member of one of those types. By defining an empty copy constructor, we tell the compiler not to try to copy the members by default upon copy construction. The actual data is then copied by the copy constructor of `ByteMessage`, which copies the whole array.
 
 While your derived class will work perfectly without a copy constructor, the compiler will yell at you when you try to use copy construction in your application. It is better to provide one.
 
 IF you provide an empty copy constructor, you **must** also provide at least one constructor. This is a C++ rule: When any constructor is defined, even if it is a "only" a copy constructor, no further constructors are implicitly generated by the compiler. The easiest thing is to just declare a parameter-less constructor as `default` (see code example above).
 
-### Optionally: Declare assignment operator as `default`
+### Optionally: Declare assignment operator as "= default"
 
 If you want to be explicit, you can also declare a `default`ed assignment operator, like so:
 
@@ -238,7 +238,7 @@ If you want to be explicit, you can also declare a `default`ed assignment operat
             /* add data members here */
     };
 
-This is strictly optional, the generated code will be the same whether you add this line or not. It is just a friendly reminder that the default assignment operator will do "the right thing": It will first call the assignment operator of the base class (i.e. `ByteMessage<MESSAGE_TYPE, MESSAGE_SIZE>`) which is explicitly defined and does absolutely nothing. Then it will call the assignemnt operators for all contained data members. As `ByteMessageField`, `ByteMessageChecksum` and `ByteMessageFieldBlob` all have working assignment operators, this will suffice.
+This is strictly optional, the generated code will be the same whether you add this line or not. It is just a friendly reminder that the default assignment operator will do "the right thing": It will first call the assignment operator of the base class (i.e. `ByteMessage<MESSAGE_TYPE, MESSAGE_SIZE>`) which is explicitly defined and does absolutely nothing. Then it will call the assignment operators for all contained data members. As `ByteMessageField`, `ByteMessageChecksum` and `ByteMessageFieldBlob` all have working assignment operators, this will suffice.
 
 ## Examples
 
@@ -250,7 +250,7 @@ This is strictly optional, the generated code will be the same whether you add t
     class Point3D : public ByteMessage<Point3D_TYPE, Point3D_SIZE> {
         public:
             // create a copy constructor which does nothing
-            Point3D(const Point3D &src) : ByteMessage<Point3D_TYPE, Point3D_SIZE>(src) {};
+            Point3D(const Point3D &src) : ByteMessage{src} {};
             Point3D() = default;                             // create default constructor
             Point3D& operator= (const Point3D &p) = default; // explicitly use default copy assignment operator
 
