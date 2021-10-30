@@ -1,5 +1,46 @@
+/**
+ * @file    bm_checksum_fletcher.cpp
+ * @brief   Implementation file for Fletcher's checksum functions, to be used with the ByteMessageChecksum class.
+ * @author  Andreas Grommek
+ * @version 1.0.0
+ * @date    2021-10-22
+ * 
+ * @section license_bm_checksum_fletcher_cpp License
+ * 
+ * The MIT Licence (MIT)
+ * 
+ * Copyright (c) 2021 Andreas Grommek
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #include "bm_checksum_fletcher.h"
 
+/**
+ * @brief   Fletcher's checksum with single-byte return value.
+ * @param   data
+ *          Pointer to array with bytes to calculate the checksum over.
+ * @param   length
+ *          Number of bytes in data to calculate the checksum.
+ * @return  The checksum as an unsigned integer number of correct width.
+ * @note    Works internally with half-bytes (nibbles).
+ */
 uint8_t fletcher8_checksum(const uint8_t * data, size_t length) {
     constexpr uint_fast8_t base = 15; // 0x0F
     uint_fast8_t sum1 = 0;
@@ -15,6 +56,14 @@ uint8_t fletcher8_checksum(const uint8_t * data, size_t length) {
     return static_cast<uint8_t>(sum2 << 4 | sum1);
 }
 
+/**
+ * @brief   The original Fletcher's checksum
+ * @param   data
+ *          Pointer to array with bytes to calculate the checksum over.
+ * @param   length
+ *          Number of bytes in data to calculate the checksum. 
+ * @return  The checksum as an unsigned integer number of correct width.
+ */
 uint16_t fletcher16_checksum(const uint8_t * data, size_t length) {
     constexpr uint_fast8_t base = 255; // 0xFF
     /*
@@ -46,6 +95,15 @@ uint16_t fletcher16_checksum(const uint8_t * data, size_t length) {
     return static_cast<uint16_t>(sum2 << 8 | sum1);
 }
 
+/**
+ * @brief   Fletcher's checksum taken over pairs of bytes.
+ * @param   data
+ *          Pointer to array with bytes to calculate the checksum over.
+ * @param   length
+ *          Number of bytes in data to calculate the checksum. If length
+ *          is uneven, an implicit 0 is added to data.
+ * @return  The checksum as an unsigned integer number of correct width.
+ */
 uint32_t fletcher32_checksum(const uint8_t * data, size_t length) {
     constexpr uint_fast16_t base = 65535; // 0xFFFF
     /*

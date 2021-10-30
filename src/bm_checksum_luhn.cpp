@@ -1,10 +1,50 @@
+/**
+ * @file    bm_checksum_luhn.cpp
+ * @brief   Implementation file for Luhn's mod-N checksum functions, to be used with the ByteMessageChecksum class.
+ * @author  Andreas Grommek
+ * @version 1.0.0
+ * @date    2021-10-22
+ * 
+ * @section license_bm_checksum_luhn_cpp License
+ * 
+ * The MIT Licence (MIT)
+ * 
+ * Copyright (c) 2021 Andreas Grommek
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #include "bm_checksum_luhn.h"
 
-/*
- * General implementation of Luhn's checksum algorithm straight from the
- * textbook without any optimizations.
- * Use for reference to check the calculation results from the more
- * optimized versions.
+/**
+ * @brief   Luhn's mod-N checksum, straight from the textbook
+ * @param   data
+ *          Pointer to array with bytes to calculate the checksum over.
+ * @param   length
+ *          Number of bytes in data to calculate the checksum.
+ * @param   base
+ *          The base of the numbering scheme. For "classic" applications
+ *          (like checksums for credit cards) use base=10. base=0 means
+ *          a base of 256.
+ * @return  The checksum value
+ * @note    This is the textbook version and thus very inefficient. Only
+ *          use this to check correctness of more optimized versions.
  */
 uint8_t luhn_checksum_textbook(const uint8_t* data, size_t length, uint8_t base) {
     // define internal base as larger data type, to be able to handle
@@ -43,6 +83,20 @@ uint8_t luhn_checksum_textbook(const uint8_t* data, size_t length, uint8_t base)
  *   when calculating the addend for factor == 2.
  * - Only do modulus calculation for addend when really necessary.
  * - Use addend for factor == 1 directly (i.e. no modulus operation at all).
+ */
+/**
+ * @brief   Luhn's mod-N checksum
+ * @param   data
+ *          Pointer to array with bytes to calculate the checksum over.
+ * @param   length
+ *          Number of bytes in data to calculate the checksum.
+ * @param   base
+ *          The base of the numbering scheme. For "classic" applications
+ *          (like checksums for credit cards) use base=10. base=0 means
+ *          a base of 256.
+ * @return  The checksum value
+ * @note    This is an optimized version with less overhead than the 
+ *          textbook version. When in doubt, use this one.
  */
 uint8_t luhn_checksum(const uint8_t* data, size_t length, uint8_t base) {
     // define internal base as larger data type
@@ -105,10 +159,17 @@ uint8_t luhn_checksum(const uint8_t* data, size_t length, uint8_t base) {
  * We don't care what sizeof(uint_fast16_t) actually is, because all possible
  * widths are a multiple of 256, resulting in desireable and correct 
  * overflow properties.
- * 
- * This version may or may not be faster than the general form, depending 
- * on input length and comiler optimization settings. Your mileage may
- * vary!! Benchmark for your current use case!
+ */
+/**
+ * @brief   Luhn's mod-N checksum for base 256
+ * @param   data
+ *          Pointer to array with bytes to calculate the checksum over.
+ * @param   length
+ *          Number of bytes in data to calculate the checksum.
+ * @return  The checksum value
+ * @note    This version may or may not be faster than the general implementation,
+ *          depending on input length and compiler optimization settings.
+ *          Your mileage may vary!! Benchmark for your actual use case!
  */
 uint8_t luhn256_checksum(const uint8_t* data, size_t length) {
     // define base
