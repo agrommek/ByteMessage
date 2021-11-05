@@ -120,21 +120,21 @@ uint64_t sum64_checksum(const uint8_t * data, size_t length) {
     uint_fast64_t addend;
     while (data < end) {
         addend = 0;
-        addend |= static_cast<uint_fast32_t>(*data++) << 56;
-        addend |= static_cast<uint_fast32_t>(*data++) << 48;
-        addend |= static_cast<uint_fast32_t>(*data++) << 40;
-        addend |= static_cast<uint_fast32_t>(*data++) << 32;
-        addend |= static_cast<uint_fast32_t>(*data++) << 24;
-        addend |= static_cast<uint_fast32_t>(*data++) << 16;
-        addend |= static_cast<uint_fast32_t>(*data++) << 8;
-        addend |= static_cast<uint_fast32_t>(*data++);
+        addend |= static_cast<uint_fast64_t>(*data++) << 56;
+        addend |= static_cast<uint_fast64_t>(*data++) << 48;
+        addend |= static_cast<uint_fast64_t>(*data++) << 40;
+        addend |= static_cast<uint_fast64_t>(*data++) << 32;
+        addend |= static_cast<uint_fast64_t>(*data++) << 24;
+        addend |= static_cast<uint_fast64_t>(*data++) << 16;
+        addend |= static_cast<uint_fast64_t>(*data++) << 8;
+        addend |= static_cast<uint_fast64_t>(*data++);
         sum += addend;
     }
     // handle remaining bytes
     addend = 0;
     for (uint_fast8_t i = 0; i < modulus; i++)  {
-        addend |= static_cast<uint_fast32_t>(*data++) << (56-i*8);
+        addend |= static_cast<uint_fast64_t>(*data++) << (56-i*8);
     }
     sum += addend;
-    return static_cast<uint32_t>(sum & UINT32_MAX);
+    return static_cast<uint64_t>(sum & UINT64_MAX);
 }
