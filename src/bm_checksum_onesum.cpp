@@ -221,7 +221,7 @@ uint32_t onesum32_checksum(const uint8_t * data, size_t length) {
         }
         // handle remaining bytes if input length was not dividable by four
         for (uint_fast8_t i=0; i<modulus; i++) {
-            sum += static_cast<uint_fast16_t>(*data) << (24-(8*i));
+            sum += static_cast<uint_fast64_t>(*data++) << (24-(8*i));
         }
         // fold back carry into the sum until there is no more carry
         while (sum >> 32) {
@@ -247,21 +247,21 @@ uint32_t onesum32_checksum(const uint8_t * data, size_t length) {
 uint32_t onesum32_checksum_textbook(const uint8_t * data, size_t length) {
     uint_fast64_t  sum = 0;
     uint_fast64_t bytes[4] = {0, 0, 0, 0};
-    uint_fast8_t modulus = length & 0x03; // same as length % 4
+    uint_fast8_t modulus = length & static_cast<size_t>(0x03); // same as length % 4
     while (length > 3) {
         bytes[0] = static_cast<uint_fast64_t>(*data++) << 24;
         bytes[1] = static_cast<uint_fast64_t>(*data++) << 16;
         bytes[2] = static_cast<uint_fast64_t>(*data++) << 8;
         bytes[3] = static_cast<uint_fast64_t>(*data++) << 0;
         sum += (bytes[0] | bytes[1] | bytes[2] | bytes[3]);
-        sum = (sum >> 32) + (sum & 0xFFFFFFFF);
+        sum = (sum >> 32) + (sum & static_cast<uint_fast64_t>(0xFFFFFFFF));
         length -= 4;            
     }
     // handle remaining bytes if input length was not dividable by four
     for (uint_fast8_t i=0; i<modulus; i++) {
-        sum += static_cast<uint_fast16_t>(*data) << (24-(8*i));
+        sum += (static_cast<uint_fast64_t>(*data++) << (24-(8*i)));
     }
-    sum = (sum >> 32) + (sum & 0xFFFFFFFF);
+    sum = (sum >> 32) + (sum & static_cast<uint_fast64_t>(0xFFFFFFFF));
     // invert sum (i.e. calculate the one's complement) and return it
     return ~(static_cast<uint32_t>(sum));
 }
