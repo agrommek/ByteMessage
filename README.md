@@ -264,7 +264,7 @@ This is strictly optional, the generated code will be the same whether you add t
 
 ## Compatibility
 
-Although written originally for the Arduino platform, there is nothing which prevents the library from being used on any other platform. The code is pure C++. Feel free to adapt to your needs.
+Although written originally for the Arduino platform, there is nothing which prevents the library from being used on any other platform. However, to determine endianness, some gcc-specific macros are used. Your mileage with other compilers may vary.
 
-Note that data types `uintX_t` are optional in C++. If they are not defined for your platform and/or compiler, this library will not work.
+Also note that data types `uintX_t` are optional in C++. If they are not defined for your platform and/or compiler, this library will not work.
 
