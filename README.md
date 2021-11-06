@@ -142,7 +142,7 @@ Note that the checksum is calculated over the values in the `uint8_t`array start
 
 Several checksum algorithms with different output sizes have been implemented:
 
-| checksum algorithm     | 1 byte | 2 bytes | 4 bytes | 8 bytes |
+| checksum algorithm     | `uint8_t` | `uint16_t` | `uint32_t` | `uint64_t` |
 |:-----------------------|:-------|:--------|:--------|:--------|
 | one's complement sum   | `onesum8_checksum` | `onesum16_checksum` / `internet_checksum` | `onesum32_checksum` | x |
 | two's complement sum   | `sum8_checksum` | `sum16_checksum` | `sum32_checksum` | `sum64_checksum` |
@@ -184,6 +184,8 @@ A `ByteMessageFieldBlob` serves the same function as a `ByteMessageField`, only 
 | `ByteMessageFieldBlob(uint8_t * messagepointer, size_t pos, size_t bloblength)` | the only constructor with *three* parameters |
 | `yteMessageFieldBlob(const ByteMessageFieldBlob &copy) = delete` | explicitly delete the copy constructor |
 | `ByteMessageFieldBlob& operator= (const ByteMessageFieldBlob &bmfb)` | assignment operator |
+| `uint8_t& operator[](size_t index)` | subscript operator |
+| `const uint8_t& operator[](size_t index) const` | subscript operator for `const` instances |
 | `size_t set(const uint8_t *data, size_t length)` | copy data from `data` to blob, return number of bytes copied |
 | `size_t set(uint8_t value=0)` | set all bytes in blob to a constant value |
 | `size_t get(uint8_t * data, size_t length) const` | copy data from blob to `data`, return number of bytes copied |
