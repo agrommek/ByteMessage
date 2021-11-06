@@ -127,7 +127,7 @@ uint8_t& ByteMessageFieldBlob::operator[](size_t index) {
  *          The index into the underlying array.
  * @return  A constant reference to the element in the underlying array.
  * @note    There comes really no good use case for constant
- *          ByteMessageFieldBlob objects to mind. But who know, maybe
+ *          ByteMessageFieldBlob objects to mind. But who knows, maybe
  *          this is useful to somebody in the future.
  */
 const uint8_t& ByteMessageFieldBlob::operator[](size_t index) const {
