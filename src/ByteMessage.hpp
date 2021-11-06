@@ -39,7 +39,7 @@
  */
 template <uint8_t TYPE, size_t SIZE>
 ByteMessage<TYPE, SIZE>::ByteMessage(void)
-    : msgarr{0} {
+    : msgarr{0}, blackhole{0} {
     msgarr[0] = TYPE;
 }
 
@@ -71,6 +71,30 @@ ByteMessage<TYPE, SIZE>::ByteMessage(const ByteMessage<TYPE, SIZE>& bm) {
 template <uint8_t TYPE, size_t SIZE>
 ByteMessage<TYPE, SIZE>& ByteMessage<TYPE, SIZE>::operator= (const ByteMessage<TYPE, SIZE>&) { // note: no named parameter to prevent compiler warning
     return *this;
+}
+
+// implement read-only subscript operator
+/**
+ * @brief   Read-only subscript operator
+ * @details Access the raw bytes of the underlying array like an array.
+ *          The first element (i.e. index 0) will always be the type.
+ *          This operaotor works read-only. You cannot change data in the
+ *          underlying array by assigning to an array element.
+ *          If you try to access an element by an out-of-bounds index, a 
+ *          reference to a constant containing zero is returned. It is not
+ *          possible to read out-of-bounds data using this operator.
+ * @param   index
+ *          The index into the underlying array.
+ * @return  A constant reference to the element in the underlying array.
+ */
+template <uint8_t TYPE, size_t SIZE>
+const uint8_t& ByteMessage<TYPE, SIZE>::operator[] (size_t index) const {
+    if (index < SIZE) {
+        return msgarr[index];
+    }
+    else {
+        return blackhole;
+    }
 }
 
 // implement get_ptr()

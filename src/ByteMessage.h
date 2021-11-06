@@ -66,6 +66,7 @@ class ByteMessage {
         ByteMessage(const ByteMessage &bm);             // copy constructor
         virtual ~ByteMessage() = default;               // default public virtual destructor
         ByteMessage& operator= (const ByteMessage& bm); // assignment operator
+        const uint8_t& operator[](size_t index) const;  // read-only subscript operator
 
         static constexpr uint8_t type = TYPE;           ///< The numeric type of the message.
         static constexpr size_t  size = SIZE;           ///< The size of the underlying array.
@@ -78,6 +79,9 @@ class ByteMessage {
             
     protected:
         uint8_t msgarr[SIZE];                           ///< The underlying array to hold the actual message data.
+    
+    private:
+        const uint8_t blackhole = 0;                    ///< constant to return if operator[] is used with out-of-bounds index
 };
 
 // include implementation file
