@@ -69,7 +69,7 @@ ByteMessage<TYPE, SIZE>::ByteMessage(const ByteMessage<TYPE, SIZE>& bm) {
  *         data members in the derived class(es).
  */
 template <uint8_t TYPE, size_t SIZE>
-ByteMessage<TYPE, SIZE>& ByteMessage<TYPE, SIZE>::operator= (const ByteMessage<TYPE, SIZE> &bm) {
+ByteMessage<TYPE, SIZE>& ByteMessage<TYPE, SIZE>::operator= (const ByteMessage<TYPE, SIZE>&) { // note: no named parameter to prevent compiler warning
     return *this;
 }
 
