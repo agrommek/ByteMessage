@@ -153,13 +153,18 @@ void setup() {
 
     Serial.println(F("\n### Running unit tests for ByteMessageFieldBlob class ###\n"));
 
-    const uint8_t data[16] = {100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115};
+    uint8_t data[16] = {100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115};
 
     // ByteMessageFieldBlob with 10 bytes
     constexpr size_t size1 = 10;
     uint8_t backend1[size1];
     ByteMessageFieldBlob bmfb1{backend1, 0, size1};
     const uint8_t * ptr1 = bmfb1.get_ptr();
+
+    // ByteMessageFieldBlob with data array as backend, but const
+    constexpr size_t size_const = 10;
+    const ByteMessageFieldBlob bmfb_const{data, 0, size_const};
+    const uint8_t * ptr_const = bmfb_const.get_ptr();
     
     // ByteMessageFieldBlob with same size as backend1
     constexpr size_t size2 = size1;
@@ -210,7 +215,8 @@ void setup() {
 
     Serial.print(F("Checking setting data bmbf1 to constant value: "));
     bmfb1.set(123);
-    bool all_same = true;
+    bool all_same;
+    all_same = true;
     for (size_t i=0; i<bmfb1.size; ++i) {
         if (ptr1[i] != 123) {
             all_same = false;
@@ -233,6 +239,40 @@ void setup() {
     bmfb4.set(123);
     bmfb4 = bmfb1;
     unittest_message( memcmp(ptr1, ptr4, bmfb1.size) == 0 && ptr4[10] == 0 && ptr4[11] == 0, errorcount);
+
+    Serial.print(F("Test regular read-access through subscript operator: "));
+    all_same = true;
+    for (size_t i=0; i<bmfb1.size; ++i) {
+        if (ptr1[i] != bmfb1[i]) {
+            all_same = false;
+            break;
+        }
+    }
+    unittest_message( all_same, errorcount);    
+
+    Serial.print(F("Test regular write-access through subscript operator: "));
+    uint8_t value;
+    value = ptr1[0];
+    value++;
+    bmfb1[0] = value;
+    unittest_message(ptr1[0] == value, errorcount);
+
+    Serial.print(F("Test out-of-bounds read-access through subscript operator: "));
+    unittest_message(bmfb1[bmfb1.size+55] == 0, errorcount);
+
+    Serial.print(F("Test out-of-bounds write-access through subscript operator: "));
+    bmfb1[bmfb1.size+55] = 123;
+    unittest_message(bmfb1[bmfb1.size+55] == 0, errorcount);
+
+    Serial.print(F("Test regular read-access on const instance through subscript operator: "));
+    unittest_message(bmfb_const[3] == ptr_const[3] && bmfb_const[3] == data[3], errorcount);
+    
+    Serial.print(F("Test out-of-bounds read-access on const instance through subscript operator: "));
+    unittest_message(bmfb_const[size_const+100] == 0, errorcount);
+
+    // The following line does not compile due to const-ness:
+    // Subscript assignment is not allowed on const instances!
+//    bmfb_const[3] = 10;
 
     /* ---- checksum functions ---- */
 
