@@ -113,7 +113,7 @@ void setup() {
     // Note, however, that we cannot copy-construct or assign between different types of
     // ByteMessage objects. This will not work:
     TankControl tc;
-    // the next line results in a compiler error: we cannot assign a Point3D to a TankControl object!
+    // the next line results in a compiler error: we cannot assign a Point3D object to a TankControl object!
 //    tc = p1;
 } // end of setup()
 
