@@ -146,7 +146,7 @@ Several checksum algorithms with different output sizes have been implemented:
 |:-----------------------|:-------|:--------|:--------|:--------|
 | one's complement sum   | `onesum8_checksum` | `onesum16_checksum` / `internet_checksum` | `onesum32_checksum` | x |
 | two's complement sum   | `sum8_checksum` | `sum16_checksum` | `sum32_checksum` | `sum64_checksum` |
-| Fletcher's checksum    | `fletcher8_checksum` | fletcher16_checksum / fletcher_checksum | fletcher32_checksum | x |
+| Fletcher's checksum    | `fletcher8_checksum` | `fletcher16_checksum` / `fletcher_checksum` | `fletcher32_checksum` | x |
 | XOR checksum           | `xor8_checksum` | `xor16_checksum` | `xor32_checksum` | `xor64_checksum` |
 | Luhn's mod256 checksum | `luhn256_checksum` | x | x | x |
 
