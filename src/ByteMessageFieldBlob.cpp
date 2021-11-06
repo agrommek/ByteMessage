@@ -59,8 +59,8 @@ ByteMessageFieldBlob::ByteMessageFieldBlob(uint8_t * messagepointer, size_t pos,
  *         A reference to a ByteMessageFieldBlob object.
  * @return A reference to a ByteMessageFieldBlob object.
  * @note   Copies the underlying bytes. If the lengths of the two 
- *         ByteMessageFieldBlob object do not match, copy only the smaller
- *         number of bytes from one object from bmfb. If the receiving
+ *         ByteMessageFieldBlob objects do not match, copy only the smaller
+ *         number of bytes from from bmfb. If the receiving
  *         ByteMessageFieldBlob is the larger one, the binary message is 
  *         padded with zeros. If it is the smaller one, the binary data
  *         is truncated.
