@@ -78,7 +78,7 @@ ByteMessage<TYPE, SIZE>& ByteMessage<TYPE, SIZE>::operator= (const ByteMessage<T
  * @brief   Read-only subscript operator
  * @details Access the raw bytes of the underlying array like an array.
  *          The first element (i.e. index 0) will always be the type.
- *          This operaotor works read-only. You cannot change data in the
+ *          This operator works read-only. You cannot change data in the
  *          underlying array by assigning to an array element.
  *          If you try to access an element by an out-of-bounds index, a 
  *          reference to a constant containing zero is returned. It is not
