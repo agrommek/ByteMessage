@@ -59,6 +59,7 @@ The following methods exist for this class:
 | `ByteMessage(const ByteMessage &bm)`| copy constructor |
 | `virtual ~ByteMessage() = default` | default public virtual destructor |
 | `ByteMessage& operator= (const ByteMessage& bm)` | the assignment operator |
+| `const uint8_t& operator[] (size_t index)` const | the read-only subscript operator |
 | `virutal const uint8_t* get_ptr(void) const final` | return read-only pointer to data |
 | `virtual bool populate(const uint8_t * raw_message, size_t message_size) final` | populate message from raw byte array |
 
