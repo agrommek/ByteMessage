@@ -58,6 +58,10 @@ class ByteMessageFieldBlob final {
         // assignment operator
         ByteMessageFieldBlob& operator= (const ByteMessageFieldBlob &bmfb);
         
+        // subscript operator
+        uint8_t& operator[](size_t index);              // read & write
+        const uint8_t& operator[](size_t index) const;  // read-only / const
+        
         size_t set(const uint8_t *data, size_t length);  // return number of bytes copied from data to msgptr
         size_t set(uint8_t value=0);                     // set whole blob to constant value
         size_t get(uint8_t * data, size_t length) const; // return number of bytes copied from msgptr to data
@@ -72,6 +76,8 @@ class ByteMessageFieldBlob final {
         
         // private member variables
         uint8_t * const msgptr; // const pointer to non-const value
+        uint8_t blackhole;             // dummy memory reference for non-const subscript operator
+        const uint8_t blackhole_const; // dummy memory reference for const subscript operator
 };
 
 #endif

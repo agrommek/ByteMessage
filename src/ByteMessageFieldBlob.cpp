@@ -47,7 +47,7 @@
  *         The length of the binary data in bytes.
  */
 ByteMessageFieldBlob::ByteMessageFieldBlob(uint8_t * messagepointer, size_t pos, size_t bloblength) 
-    : size{bloblength}, msgptr{messagepointer+pos} {
+    : size{bloblength}, msgptr{messagepointer+pos}, blackhole{0}, blackhole_const{0} {
     zerofill(0); // pre-fill buffer with zeros
     return;
 }
@@ -74,6 +74,71 @@ ByteMessageFieldBlob& ByteMessageFieldBlob::operator= (const ByteMessageFieldBlo
     // fill rest with zeros (if any)
     zerofill(length);
     return *this;
+}
+
+// subscript operator (read & write)
+/**
+ * @brief   The subscript operator
+ * @details Access the raw bytes of the underlying array like an array.
+ *          Using this operator it is possible to access the data in the
+ *          underlying array byte by byte.
+ *          If you try to access an element by an out-of-bounds index, a 
+ *          reference to an instance-internal value is returned. Your can
+ *          write to this reference, but whenever any out-of bounds element
+ *          the value will be reset to 0.
+ *          It is not possible to read or write out-of-bounds data using
+ *          this operator, i.e. it is safe to use.
+ * @param   index
+ *          The index into the underlying array.
+ * @return  A reference to the element in the underlying array.
+ * @note    In fact you @b can read from and write to the dummy reference
+ *          which is returned when accessing an out-of-bounds index.
+ *          However, this is not really useful, because the value is reset to 
+ *          0 whenever the subscript operator is used with an out-of-bounds
+ *          index. Don't outsmart yourself!
+ */
+uint8_t& ByteMessageFieldBlob::operator[](size_t index) {
+    if (index < size) {
+        // in range - reading and writing is ok
+        return msgptr[index];
+    }
+    else {
+        // re-set blackhole to 0 immediately before returning
+        // --> all out-of-bounds reads will return 0
+        blackhole = 0;
+        return blackhole;
+    }
+}
+
+// const subscript operator (read-only)
+/**
+ * @brief   Read-only subscript operator for constant instances
+ * @details Access the raw bytes of the underlying array like an array.
+ *          Using this operator it is possible to access the data in the
+ *          underlying array byte by byte.
+ *          This operator works read-only. You cannot change data in the
+ *          underlying array by assigning to an array element.
+ *          If you try to access an element by an out-of-bounds index, a 
+ *          reference to a constant containing zero is returned. It is not
+ *          possible to read out-of-bounds data using this operator.
+ *          Trying to write data (in-bounds or out-of-bouds) will result
+ *          in a compile-time error.
+ * @param   index
+ *          The index into the underlying array.
+ * @return  A constant reference to the element in the underlying array.
+ * @note    There comes really no good use case for constant
+ *          ByteMessageFieldBlob objects to mind. But who know, maybe
+ *          this is useful to somebody in the future.
+ */
+const uint8_t& ByteMessageFieldBlob::operator[](size_t index) const {
+    if (index < size) {
+        // in range - reading and writing is ok
+        return msgptr[index];
+    }
+    else {
+        // always return reference to constant 0
+        return blackhole_const;
+    }
 }
 
 // copy data from *data to the message
