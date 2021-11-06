@@ -525,6 +525,9 @@ void setup() {
     utm3 = utm;
     unittest_message(utm.size == utm3.size && utm_ptr != utm3_ptr && memcmp(utm_ptr, utm3_ptr, utm.size) == 0, errorcount);
 
+    Serial.print(F("Testing read-only subscript operator for ByteMessage object: "));
+    unittest_message(utm[0] == BM_TYPE && utm[1] == data_array[1] && utm[utm.size+1] == 0, errorcount);
+
     /* ---- final evaluation ---- */
         
     // force at least one test to fail for testing...
