@@ -121,7 +121,7 @@ uint8_t& ByteMessageFieldBlob::operator[](size_t index) {
  *          If you try to access an element by an out-of-bounds index, a 
  *          reference to a constant containing zero is returned. It is not
  *          possible to read out-of-bounds data using this operator.
- *          Trying to write data (in-bounds or out-of-bouds) will result
+ *          Trying to write data (in-bounds or out-of-bounds) will result
  *          in a compile-time error.
  * @param   index
  *          The index into the underlying array.
